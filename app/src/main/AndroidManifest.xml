@@ -4,7 +4,8 @@
     <!-- Internet permission -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission-sdk-23 android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission-sdk-23 android:name="android.permission.READ_SMS"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
@@ -35,7 +36,7 @@
         </activity>
 
         <activity
-            android:name="com.example.darenliu.chatroom.Course"
+            android:name="com.example.darenliu.chatroom.LecturePage"
             android:label="@string/course_room_heading">
             android:parentActivityName=".LectureView" >
             <meta-data
@@ -43,14 +44,21 @@
                 android:value=".MainActivity" />
         </activity>
 
-        <activity
-            android:name="org.ispeech.iSpeechFramework"
-            android:configChanges="orientation|keyboard"
-            android:theme="@android:style/Theme.Translucent" />
+        <activity android:name="com.example.darenliu.chatroom.VideoPage"
+            android:label="Video">
+            android:parentActivityName=".LecturePage" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
 
-        <meta-data
-            android:name="ispeech_api_key"
-            android:value="4b5b18812b91dbe3bf3793061bf14a0f" />
+        <activity android:name="com.example.darenliu.chatroom.TranscriptPage"
+            android:label="Transcript">
+            android:parentActivityName=".LecturePage" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
 
         <activity
             android:name="com.example.darenliu.chatroom.Chat"

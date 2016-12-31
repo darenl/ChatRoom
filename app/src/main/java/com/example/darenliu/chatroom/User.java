@@ -18,7 +18,7 @@ public class User implements Serializable {
     }
 
     public String getName(){
-        return firstName + lastName;
+        return firstName + " " + lastName;
     }
 
     public String getPhone() {

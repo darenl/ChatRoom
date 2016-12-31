@@ -4,8 +4,11 @@ import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
@@ -32,11 +35,11 @@ import java.util.ArrayList;
 public class MainActivity extends ListActivity {
 
     // URL to get contacts JSON
-    private static String url = " https://shaban.rit.albany.edu/lecture";
+    private static String url = "https://shaban.rit.albany.edu/course";
 
-    //JSON Node variables for group
-    private static final String TAG_GROUP_ID = "id";
-    private static final String TAG_GROUP_NAME = "name";
+    //JSON Node variables for course
+    private static final String TAG_COURSE_ID = "id";
+    private static final String TAG_COURSE_NAME = "name";
     private static final String TAG_USER_NUMBER = "phone";
     private static final String TAG_USER_FIRST_NAME = "firstName";
     private static final String TAG_USER_LAST_NAME = "lastName";
@@ -47,32 +50,39 @@ public class MainActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        final int REQUEST_CODE_ASK_PERMISSIONS = 123;
+        if(ContextCompat.checkSelfPermission(getBaseContext(), "android.permission.READ_SMS") != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{"android.permission.READ_SMS"}, REQUEST_CODE_ASK_PERMISSIONS);
+        }
+
+        if(ContextCompat.checkSelfPermission(getBaseContext(), "android.permission.READ_PHONE_STATE") != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{"android.permission.READ_PHONE_STATE"}, REQUEST_CODE_ASK_PERMISSIONS);
+        }
 
         new ConfirmUser().execute();
     }
 
-    private ArrayList<Group> ParseJSONGroup(String json) {
+    private ArrayList<Course> ParseJSONCourse(String json) {
         if (json != null) {
             try {
 
-                ArrayList<Group> groupList = new ArrayList<Group>();
+                ArrayList<Course> courseList = new ArrayList<Course>();
                 ArrayList<String> listOfId = new ArrayList<String>();
                 JSONArray jsonArray = new JSONArray(json);
 
                 // looping through All Students
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject c = jsonArray.getJSONObject(i);
-                    JSONObject course = (JSONObject) c.get("course");
+                    JSONObject course = jsonArray.getJSONObject(i);
 
-                    String groupid = course.getString(TAG_GROUP_ID);
-                    String groupname = course.getString(TAG_GROUP_NAME);
+                    String courseid = course.getString(TAG_COURSE_ID);
+                    String coursename = course.getString(TAG_COURSE_NAME);
 
-                    if(!listOfId.contains(groupid)) {
-                        groupList.add(new Group(groupname, groupid));
-                        listOfId.add(groupid);
+                    if(!listOfId.contains(courseid)) {
+                        courseList.add(new Course(coursename, courseid));
+                        listOfId.add(courseid);
                     }
                 }
-                return groupList;
+                return courseList;
             } catch (JSONException e) {
                 e.printStackTrace();
                 return null;
@@ -85,23 +95,21 @@ public class MainActivity extends ListActivity {
 
     private User ParseJSONUser(String json) {
         TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+
         String phoneNumber = tMgr.getLine1Number();
-        System.out.println("this is the phone number: " + phoneNumber);
         if (json != null) {
             try {
 
                 ArrayList<User> userList = new ArrayList<User>();
                 JSONArray jsonArray = new JSONArray(json);
-
                 // looping through All Students
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject c = jsonArray.getJSONObject(i);
-                    JSONObject course = (JSONObject) c.get("users");
-                    String userNumber = course.getString(TAG_USER_NUMBER);
+                    JSONObject userObject = jsonArray.getJSONObject(i);
+                    String userNumber = userObject.getString(TAG_USER_NUMBER);
 
                     if(userNumber == phoneNumber) {
-                        String firstName = course.getString(TAG_USER_FIRST_NAME);
-                        String lastName = course.getString(TAG_USER_LAST_NAME);
+                        String firstName = userObject.getString(TAG_USER_FIRST_NAME);
+                        String lastName = userObject.getString(TAG_USER_LAST_NAME);
                         return new User(firstName, lastName, userNumber);
                     }
                 }
@@ -137,9 +145,9 @@ public class MainActivity extends ListActivity {
         }
     }
 
-    private class GetGroup extends AsyncTask<Void, Void, Void> {
+    private class GetCourse extends AsyncTask<Void, Void, Void> {
 
-        ArrayList<Group> groupList;
+        ArrayList<Course> courseList;
         ProgressDialog progressDialog;
 
         @Override
@@ -165,7 +173,7 @@ public class MainActivity extends ListActivity {
             }
 
 
-            groupList = ParseJSONGroup(jsonStr);
+            courseList = ParseJSONCourse(jsonStr);
 
             return null;
         }
@@ -179,15 +187,15 @@ public class MainActivity extends ListActivity {
             /**
              * Updating received data from JSON into ListView
              */
-            final ArrayList<String> listOfGroupNames = new ArrayList<String>();
+            final ArrayList<String> listOfCourseNames = new ArrayList<String>();
 
-            for(Group group: groupList){
-                listOfGroupNames.add(group.getGroupName());
+            for(Course course : courseList){
+                listOfCourseNames.add(course.getCourseName());
             }
 
-            //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.list_item, listOfGroupNames);
+            //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.list_item, listOfCourseNames);
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.list_item, listOfGroupNames);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.list_item, listOfCourseNames);
 
             ListView listview = (ListView) findViewById(R.id.list);
             listview.setAdapter(adapter);
@@ -197,10 +205,10 @@ public class MainActivity extends ListActivity {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     Object item = adapterView.getItemAtPosition(i);
-                    int indexOfGroup = listOfGroupNames.indexOf((String) item);
+                    int indexOfCourse = listOfCourseNames.indexOf((String) item);
                     Intent intent = new Intent(MainActivity.this, LectureView.class);
-                    Group group = groupList.get(indexOfGroup);
-                    intent.putExtra("group", group);
+                    Course course = courseList.get(indexOfCourse);
+                    intent.putExtra("course", course);
                     intent.putExtra("user", user);
                     startActivity(intent);
                 }
@@ -218,7 +226,7 @@ public class MainActivity extends ListActivity {
             super.onPreExecute();
             // Showing progress loading dialog
             progressDialog = new ProgressDialog(MainActivity.this);
-            progressDialog.setMessage("Please wait...");
+            progressDialog.setMessage("Loading all courses...");
             progressDialog.setCancelable(false);
             progressDialog.show();
         }
@@ -246,7 +254,7 @@ public class MainActivity extends ListActivity {
             // Dismiss the progress dialog
             if (progressDialog.isShowing())
                 progressDialog.dismiss();
-            new GetGroup().execute();
+            new GetCourse().execute();
         }
 
     }

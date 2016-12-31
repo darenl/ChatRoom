@@ -8,26 +8,47 @@ public class Lecture implements Serializable{
     private String lectureDescription;
     private String lectureId;
     private String serialNumber;
-    private Group group;
+    private Course course;
     private ArrayList<Video> videos;
-    private String transcript_url;
+
+    private ArrayList<String> transcript_url = new ArrayList<String>();
 
     public Lecture(String lectureDescription, String lectureId, String serialNumber, String transcript_url){
         this.lectureDescription = lectureDescription;
         this.lectureId = lectureId;
         this.serialNumber = serialNumber;
-        this.transcript_url = transcript_url;
+        this.transcript_url.add(transcript_url);
     }
 
-    public Group getGroup() {
-        return group;
+    public Course getCourse() {
+        return course;
     }
 
-    public void setGroup(Group group) {
-        this.group = group;
+    public void setCourse(Course course) {
+        this.course = course;
     }
 
     public ArrayList<Video> getVideo(){ return videos; }
+
+    public ArrayList<String> getVideoTitles(){
+        ArrayList<String> titles = new ArrayList<String>();
+        for(Video vid: videos){
+            titles.add(vid.getTitle());
+        }
+        return titles;
+    }
+
+    public ArrayList<String> getTranscriptUrl() {
+        return transcript_url;
+    }
+
+    public ArrayList<String> getShortenedUrl(){
+        ArrayList<String> arr = new ArrayList<String>();
+        for(String url : transcript_url){
+            arr.add(url.split("/")[2]);
+        }
+        return arr;
+    }
 
     public void setVideo(ArrayList<Video> videos){ this.videos = videos; }
 
@@ -37,23 +58,11 @@ public class Lecture implements Serializable{
         return serialNumber;
     }
 
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
-    }
-
     public String getLectureId() {
         return lectureId;
     }
 
-    public void setLectureId(String lectureId) {
-        this.lectureId = lectureId;
-    }
-
     public String getLectureDescription() {
         return lectureDescription;
-    }
-
-    public void setLectureDescription(String lectureDescription) {
-        this.lectureDescription = lectureDescription;
     }
 }

@@ -9,19 +9,19 @@ public class Message implements Serializable {
 
     private String username;
     private User user;
-    private Group group;
+    private Course course;
     private String content;
     private String id;
 
-    public Message(User user, Group group, String content){
+    public Message(User user, Course course, String content){
         this.user = user;
-        this.group = group;
+        this.course = course;
         this.content = content;
     }
 
-    public Message(String username, Group group, String content){
+    public Message(String username, Course course, String content){
         this.username = username;
-        this.group = group;
+        this.course = course;
         this.content = content;
     }
 
@@ -49,11 +49,11 @@ public class Message implements Serializable {
         this.id = id;
     }
 
-    public Group getGroup() {
-        return group;
+    public Course getCourse() {
+        return course;
     }
 
-    public void setGroup(Group group) {
-        this.group = group;
+    public void setCourse(Course course) {
+        this.course = course;
     }
 }

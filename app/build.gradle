@@ -26,6 +26,6 @@ dependencies {
     compile 'io.socket:socket.io-client:0.7.0'
     compile 'com.github.nkzawa:socket.io-client:0.3.0'
     compile 'com.google.android.gms:play-services-appindexing:8.1.0'
-    compile 'com.android.support:recyclerview-v7:+'
+    compile 'com.android.support:recyclerview-v7:24.+'
     compile files('libs/iSpeech-SDK-1.5.jar')
 }

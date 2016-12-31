@@ -9,19 +9,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-
-import javax.net.ssl.HttpsURLConnection;
 
 public class WebRequest {
     // URL to get contacts JSON
@@ -45,7 +34,7 @@ public class WebRequest {
     //JSON Node variables from server
     private static final String TAG_FROM_SERVER = "From server";
     private static final String TAG_AUTHOR_NAME = "author";
-    private static final String TAG_GROUP_NAME_FROM_SERVER = "group";
+    private static final String TAG_GROUP_NAME_FROM_SERVER = "course";
     private static final String TAG_CONTENT_FROM_SERVER = "content";
     private static final String TAG_AUTHOR_ID_FROM_SERVER = "author_id";
     private static final String TAG_GROUP_ID_FROM_SERVER = "group_id";
@@ -155,7 +144,7 @@ public class WebRequest {
                     JSONObject c = messagesFromServer.getJSONObject(i);
 
                     String author = c.getString(TAG_AUTHOR_ID_FROM_SERVER);
-                    String group = c.getString(TAG_GROUP_NAME_FROM_SERVER);
+                    String course = c.getString(TAG_GROUP_NAME_FROM_SERVER);
                     String content = c.getString(TAG_CONTENT_FROM_SERVER);
                     String authorid = c.getString(TAG_AUTHOR_ID_FROM_SERVER);
                     String groupid = c.getString(TAG_GROUP_ID_FROM_SERVER);
@@ -164,7 +153,7 @@ public class WebRequest {
                     HashMap<String, String> message = new HashMap<String, String>();
 
                     message.put(TAG_AUTHOR_ID_FROM_SERVER, author);
-                    message.put(TAG_GROUP_NAME_FROM_SERVER, group);
+                    message.put(TAG_GROUP_NAME_FROM_SERVER, course);
                     message.put(TAG_CONTENT, content);
                     message.put(TAG_AUTHOR_ID_FROM_SERVER, authorid);
                     message.put(TAG_GROUP_ID_FROM_SERVER, groupid);

@@ -30,7 +30,7 @@ import java.util.ArrayList;
 public class LectureView extends ListActivity {
 
     // URL to get contacts JSON
-    private static String url = "http://104.236.56.153:1337/lecture";
+    private static String url = "https://shaban.rit.albany.edu/lecture";
 
     //JSON Node variables for lectures
     private static final String TAG_LECTURE = "lecture";
@@ -44,7 +44,7 @@ public class LectureView extends ListActivity {
     private static final String TAG_COURSES = "course";
     private static final String TAG_COURSE_NAME = "name";
 
-    public Group group;
+    public Course course;
     public User user;
     public String courseId;
     
@@ -54,9 +54,9 @@ public class LectureView extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Intent intent = getIntent();
-        group = (Group) intent.getSerializableExtra("group");
+        course = (Course) intent.getSerializableExtra("course");
         user = (User) intent.getSerializableExtra("user");
-        courseId = group.getGroupId();
+        courseId = course.getCourseId();
         // Calling async task to get json
         new GetLecture().execute();
     }
@@ -78,13 +78,13 @@ public class LectureView extends ListActivity {
                     Lecture lecture = new Lecture(lecturename, lectureid, serialnumber, transcript_url);
                     JSONArray videosArray = c.getJSONArray(TAG_VIDEOS);
                     ArrayList<Video> videoList = new ArrayList<Video>();
-                    ArrayList<Group> groupList = new ArrayList<Group>();
+                    ArrayList<Course> courseList = new ArrayList<Course>();
                     for(int j = 0; j < videosArray.length(); j++){
                         JSONObject d = videosArray.getJSONObject(j);
                         String id = d.getString(TAG_LECTURE);
                         String lecture_id = d.getString(TAG_LECTURE_ID);
                         String title = d.getString(TAG_TITLE);
-                        String url = d.getString(TAG_URL);
+                        String url = "https://shaban.rit.albany.edu/" + d.getString(TAG_URL);
                         videoList.add(new Video(lecture, title, url, id));
                     }
                     lecture.setVideo(videoList);
@@ -92,7 +92,7 @@ public class LectureView extends ListActivity {
                     JSONObject e = c.getJSONObject("course");
                     String course_name = e.getString(TAG_COURSE_NAME);
                     String course_id = e.getString(TAG_LECTURE_ID);
-                    lecture.setGroup(new Group(course_name, course_id));
+                    lecture.setCourse(new Course(course_name, course_id));
                     lectureList.add(lecture);
                 }
                 return lectureList;
@@ -136,7 +136,7 @@ public class LectureView extends ListActivity {
             super.onPreExecute();
             // Showing progress loading dialog
             progressDialog = new ProgressDialog(LectureView.this);
-            progressDialog.setMessage("Please wait...");
+            progressDialog.setMessage("Loading all lectures...");
             progressDialog.setCancelable(false);
             progressDialog.show();
         }
@@ -185,12 +185,10 @@ public class LectureView extends ListActivity {
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     Object item = adapterView.getItemAtPosition(i);
                     int indexOfLecture = listOfLectureNames.indexOf((String) item);
-                    Intent intent = new Intent(LectureView.this, Course.class);
+                    Intent intent = new Intent(LectureView.this, LecturePage.class);
                     Lecture lecture = lectureList.get(indexOfLecture);
                     intent.putExtra("lecture", lecture);
-                    //intent.putExtra("group", group);
-                    //intent.putExtra("indexSlides", "0");
-                    //intent.putExtra("section", "Next Part");
+                    intent.putExtra("course", course);
                     intent.putExtra("user", user);
                     startActivity(intent);
                 }

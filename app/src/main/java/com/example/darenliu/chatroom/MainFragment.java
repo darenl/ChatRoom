@@ -46,7 +46,7 @@ public class MainFragment extends Fragment {
     private String nameOfUser;
     private SailsIOClient socket;
     private User user;
-    private Group group;
+    private Course course;
     private Lecture lecture;
 
     public MainFragment() {
@@ -64,12 +64,12 @@ public class MainFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Intent intent = getActivity().getIntent();
         user = (User) intent.getSerializableExtra("user");
-        group = (Group) intent.getSerializableExtra("group");
+        course = (Course) intent.getSerializableExtra("course");
         lecture = (Lecture) intent.getSerializableExtra("lecture");
         nameOfUser = user.getName();
         setHasOptionsMenu(true);
 
-        socket = new SailsIOClient("http://104.236.56.153:1337", group.getGroupId());
+        socket = new SailsIOClient("https://shaban.rit.albany.edu", course.getCourseId());
         socket.socket.on("message", onNewMessage);
     }
 
@@ -167,14 +167,14 @@ public class MainFragment extends Fragment {
     }
 
     private void addMessage(String message) {
-        Message newMsg = new Message(user, group, message);
+        Message newMsg = new Message(user, course, message);
         mMessages.add(newMsg);
         mAdapter.notifyItemInserted(mMessages.size() - 1);
         scrollToBottom();
     }
 
     private void addMessage(String username, String message){
-        Message newMsg = new Message(username, group, message);
+        Message newMsg = new Message(username, course, message);
         mMessages.add(newMsg);
         mAdapter.notifyItemInserted(mMessages.size() - 1);
         scrollToBottom();
@@ -208,15 +208,15 @@ public class MainFragment extends Fragment {
     public JSONObject emitMessage(String message) throws Exception{
         JSONObject data = new JSONObject();
         data.put("author", 1);
-        data.put("group", 1);
+        data.put("course", 1);
         data.put("content", message);
         return data;
     }
 
     private void leave() {
         socket.socket.Disconnect();
-        Intent intent = new Intent(getActivity(), Course.class);
-        intent.putExtra("group", group);
+        Intent intent = new Intent(getActivity(), LecturePage.class);
+        intent.putExtra("course", course);
         intent.putExtra("user", user);
         startActivity(intent);
     }

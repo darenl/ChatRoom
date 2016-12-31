@@ -1,10 +1,12 @@
 package com.example.darenliu.chatroom;
 
+import java.io.Serializable;
+
 /**
  * Created by Daren Liu on 11/11/2016.
  */
 
-public class Video {
+public class Video implements Serializable{
 
     private Lecture lecture;
     private String title;
@@ -14,7 +16,8 @@ public class Video {
     public Video(Lecture lecture, String title, String url, String id){
         this.lecture = lecture;
         this.title = title;
-        this.url = url;
+        String[] temp = url.split("/");
+        this.url = temp[temp.length - 1];
         this.id = id;
     }
 

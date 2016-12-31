@@ -16,25 +16,19 @@
         android:layout_width="fill_parent"
         android:gravity="center" />
 
-    <TextView android:id="@+id/videoTitle"
+    <TextView android:id="@+id/pdfTitle"
         android:layout_height="38dp"
         android:layout_width="fill_parent"
         android:gravity="center" />
 
-    <VideoView
-        android:id="@+id/video"
-        android:layout_width="wrap_content"
-        android:layout_height="260dp"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:visibility="gone"/>
-
     <Button
         android:id="@+id/download"
         android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:text="Download Video"
-        android:visibility="gone"/>
+        android:layout_height="wrap_content"
+        android:text="Download PDF"
+        android:visibility="gone"
+        android:elevation="0dp"
+        android:layout_weight="0.08" />
 
 
 </LinearLayout>
