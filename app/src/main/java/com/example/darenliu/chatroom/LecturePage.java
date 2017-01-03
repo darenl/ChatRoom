@@ -1,14 +1,22 @@
 package com.example.darenliu.chatroom;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+
+import java.io.File;
 
 
 /**
@@ -18,6 +26,10 @@ public class LecturePage extends Activity {
     Course course;
     User user;
     Lecture lecture;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,13 +70,40 @@ public class LecturePage extends Activity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Object item = adapterView.getItemAtPosition(i);
+
                 int indexOfTranscript = lecture.getTranscriptUrl().indexOf("/transcripts/" + (String) item);
-                Intent intent = new Intent(LecturePage.this, TranscriptPage.class);
-                intent.putExtra("lecture", lecture);
-                intent.putExtra("course", course);
-                intent.putExtra("transcript", lecture.getTranscriptUrl().get(indexOfTranscript));
-                intent.putExtra("user", user);
-                startActivity(intent);
+                String transcript = lecture.getTranscriptUrl().get(indexOfTranscript);
+                int permission = ActivityCompat.checkSelfPermission(LecturePage.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+                if (permission != PackageManager.PERMISSION_GRANTED) {
+                    // We don't have permission so prompt the user
+                    ActivityCompat.requestPermissions(
+                            LecturePage.this,
+                            PERMISSIONS_STORAGE,
+                            1
+                    );
+                }
+                final File file = new File(Environment.getExternalStorageDirectory(), transcript.split("/")[2]);
+
+                if (file.exists()) {
+                    new Thread(new Runnable(){
+
+                        public void run(){
+                            Intent intent = new Intent(Intent.ACTION_VIEW);
+                            intent.setDataAndType(Uri.fromFile(file), "application/pdf");
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                        }
+                    }).start();
+                }
+                else {
+                    Intent intent = new Intent(LecturePage.this, TranscriptPage.class);
+                    intent.putExtra("lecture", lecture);
+                    intent.putExtra("course", course);
+                    intent.putExtra("transcript", transcript);
+                    intent.putExtra("user", user);
+                    startActivity(intent);
+                }
             }
         });
     }

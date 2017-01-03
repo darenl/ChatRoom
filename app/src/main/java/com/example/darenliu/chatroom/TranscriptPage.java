@@ -1,11 +1,18 @@
 package com.example.darenliu.chatroom;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -26,6 +33,10 @@ public class TranscriptPage extends Activity {
     User user;
     Lecture lecture;
     String transcript;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,24 +54,15 @@ public class TranscriptPage extends Activity {
         groupName.setText("Course: " + course.getCourseName());
         lectureDescription.setText("Description: " + lecture.getLectureDescription());
 
-        File file = new File(getFilesDir(), transcript.split("/")[2]);
+        Button downloadButton = (Button) findViewById(R.id.download);
+        downloadButton.setVisibility(View.VISIBLE);
+        downloadButton.setOnClickListener(new Button.OnClickListener(){
 
-        if (file.exists()) {
-            System.out.println("Hello the file somehow exists");
+            public void onClick(View view){
+                new DownloadTranscript().execute();
+            }
 
-        }
-        else{
-            System.out.println("it dont exist");
-            Button downloadButton = (Button) findViewById(R.id.download);
-            downloadButton.setVisibility(View.VISIBLE);
-            downloadButton.setOnClickListener(new Button.OnClickListener(){
-
-                public void onClick(View view){
-                    new DownloadTranscript().execute();
-                }
-
-            });
-        }
+        });
     }
 
     //Code learned from following url
@@ -83,15 +85,24 @@ public class TranscriptPage extends Activity {
         protected Void doInBackground(Void... args) {
 
             try {
-                System.out.println("https://shaban.rit.albany.edu" + transcript);
+                int permission = ActivityCompat.checkSelfPermission(TranscriptPage.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+                if (permission != PackageManager.PERMISSION_GRANTED) {
+                    // We don't have permission so prompt the user
+                    ActivityCompat.requestPermissions(
+                            TranscriptPage.this,
+                            PERMISSIONS_STORAGE,
+                            1
+                    );
+                }
+
                 URL url = new URL("https://shaban.rit.albany.edu" + transcript);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.connect();
 
                 String fileName = transcript.split("/")[2];
-                System.out.println("Downloading " + fileName);
-                File output = new File(getFilesDir(), fileName);
+                File output = new File(Environment.getExternalStorageDirectory(), fileName);
 
                 if (!output.exists())
                     output.createNewFile();
@@ -121,6 +132,16 @@ public class TranscriptPage extends Activity {
             if (progressDialog.isShowing())
                 progressDialog.dismiss();
 
+            new Thread(new Runnable(){
+
+                public void run(){
+                    File file = new File(Environment.getExternalStorageDirectory(), transcript.split("/")[2]);
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setDataAndType(Uri.fromFile(file), "application/pdf");
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }
+            }).start();
 
         }
 
