@@ -1,6 +1,7 @@
 package com.example.darenliu.chatroom;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by Daren Liu on 11/11/2016.
@@ -16,8 +17,7 @@ public class Video implements Serializable{
     public Video(Lecture lecture, String title, String url, String id){
         this.lecture = lecture;
         this.title = title;
-        String[] temp = url.split("/");
-        this.url = temp[temp.length - 1];
+        this.url = url;
         this.id = id;
     }
 
@@ -41,6 +41,10 @@ public class Video implements Serializable{
         return url;
     }
 
+    public String getShortenedUrl() {
+        String[] temp = url.split("/");
+        return temp[temp.length - 1];
+    }
     public void setUrl(String url) {
         this.url = url;
     }

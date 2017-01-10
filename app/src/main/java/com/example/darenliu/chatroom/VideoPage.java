@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
@@ -48,47 +49,23 @@ public class VideoPage extends Activity {
         groupName.setText("Course: " + course.getCourseName());
         lectureDescription.setText("Description: " + lecture.getLectureDescription());
         vidTitle.setText(video.getTitle());
-//        //ArrayList<MediaController> listOfMediaCtrl = new ArrayList<MediaController>();
-//        ArrayList<String> listOfVids = new ArrayList<String>();
-//        LinearLayout layout = (LinearLayout) findViewById(R.id.layout);
-//        for (final Video vid : lecture.getVideo()) {
-//            TextView titleText = new TextView(LecturePage.this);
-//            titleText.setText(vid.getTitle());
-//            titleText.setGravity(Gravity.CENTER);
-//            layout.addView(titleText);
-//            File file = new File(getFilesDir(), vid.getUrl());
-//            //File file = new File(getFilesDir(), "vid.mp4");
-//            if (file.exists()) {
-//                System.out.println("File exists for video " + vid.getUrl());
-//                if (!listOfVids.contains(vid.getUrl())) {
-//                    listOfVids.add(vid.getUrl());
-//                    String vidPath = vid.getUrl();
-//                    VideoView watchVid = new VideoView(LecturePage.this);
-//                    createVideo(watchVid, vidPath, layout);
-//                }
-//            } else {
-//                System.out.println("File does not exist for video " + vid.getUrl());
-//                Button downloadButton = new Button(LecturePage.this);
-//                downloadButton.setText("Download " + vid.getTitle());
-//                downloadButton.setOnClickListener(new Button.OnClickListener() {
-//
-//                    public void onClick(View view) {
-//                        new DownloadVideos(vid.getUrl()).execute();
-//                    }
-//
-//                });
-//                layout.addView(downloadButton);
-//            }
-//        }
 
-        File file = new File(getFilesDir(), video.getUrl());
+        File file = new File(Environment.getExternalStorageDirectory(), video.getShortenedUrl());
 
         if (file.exists()) {
-            //Code learned from https://android-coffee.com/tutorial-how-to-play-video-in-android-studio-1-4/
-            //Code for media controller learned from http://www.techotopia.com/index.php/An_Android_Studio_VideoView_and_MediaController_Tutorial
+            /*
+             * Title: Tutorial how to Play Video in Android Studio 1.4
+             * Date: 2016
+             * Availability: https://android-coffee.com/tutorial-how-to-play-video-in-android-studio-1-4/
+             */
+            /*
+             * Title: An Android Studio VideoView and MediaController Tutorial
+             * Date: 2016
+             * Availability: http://www.techotopia.com/index.php/An_Android_Studio_VideoView_and_MediaController_Tutorial
+             */
             VideoView viewMovie = (VideoView) findViewById(R.id.video);
             viewMovie.setVisibility(View.VISIBLE);
-            viewMovie.setVideoPath(getFilesDir() + "/" + video.getUrl());
+            viewMovie.setVideoPath(Environment.getExternalStorageDirectory() + "/" + video.getShortenedUrl());
             viewMovie.requestFocus();
             MediaController mediaController = new MediaController(this);
             mediaController.setAnchorView(viewMovie);
@@ -108,22 +85,6 @@ public class VideoPage extends Activity {
         }
     }
 
-    //Code learned from https://android-coffee.com/tutorial-how-to-play-video-in-android-studio-1-4/
-    //Code for media controller learned from http://www.techotopia.com/index.php/An_Android_Studio_VideoView_and_MediaController_Tutorial
-    public void createVideo(VideoView watchVid, String vidPath, LinearLayout layout){
-        Display display = getWindowManager().getDefaultDisplay();
-        LinearLayout.LayoutParams videoParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.FILL_PARENT);
-        watchVid.setLayoutParams(videoParams);
-        watchVid.setVisibility(View.VISIBLE);
-        watchVid.setVideoPath(getFilesDir() + "/" + vidPath);
-        watchVid.requestFocus();
-        layout.addView(watchVid);
-        MediaController mediaController = new MediaController(this);
-        mediaController.setAnchorView(watchVid);
-        watchVid.setMediaController(mediaController);
-        //watchVid.start();
-    }
-
     public void startChat(View view){
         Intent intent = new Intent(this, Chat.class);
         intent.putExtra("course", course);
@@ -131,8 +92,11 @@ public class VideoPage extends Activity {
         startActivity(intent);
     }
 
-    //Code learned from following url
-    //http://stackoverflow.com/questions/31718850/download-mp4-from-server-and-save-it-to-sdcard
+    /*
+     * Author: Tamás Cseh
+     * Date: 2015
+     * Availability: http://stackoverflow.com/questions/31718850/download-mp4-from-server-and-save-it-to-sdcard
+     */
     private class DownloadVideos extends AsyncTask<Void, Void, Void> {
 
         ProgressDialog progressDialog;
@@ -156,8 +120,8 @@ public class VideoPage extends Activity {
                 connection.setRequestMethod("GET");
                 connection.connect();
 
-                String fileName = video.getUrl();
-                File output = new File(getFilesDir(), fileName);
+                String fileName = video.getShortenedUrl();
+                File output = new File(Environment.getExternalStorageDirectory(), fileName);
 
                 if (!output.exists())
                     output.createNewFile();
@@ -187,9 +151,11 @@ public class VideoPage extends Activity {
             if (progressDialog.isShowing())
                 progressDialog.dismiss();
 
+            Button button = (Button) findViewById(R.id.download);
+            button.setVisibility(View.GONE);
             VideoView viewMovie = (VideoView) findViewById(R.id.video);
             viewMovie.setVisibility(View.VISIBLE);
-            viewMovie.setVideoPath(getFilesDir() + "/" + video.getUrl());
+            viewMovie.setVideoPath(Environment.getExternalStorageDirectory() + "/" + video.getShortenedUrl());
             viewMovie.requestFocus();
             MediaController mediaController = new MediaController(VideoPage.this);
             mediaController.setAnchorView(viewMovie);

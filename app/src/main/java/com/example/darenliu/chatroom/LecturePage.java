@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -76,21 +77,32 @@ public class LecturePage extends Activity {
                 int permission = ActivityCompat.checkSelfPermission(LecturePage.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
                 if (permission != PackageManager.PERMISSION_GRANTED) {
-                    // We don't have permission so prompt the user
-                    ActivityCompat.requestPermissions(
-                            LecturePage.this,
-                            PERMISSIONS_STORAGE,
-                            1
-                    );
+                    ActivityCompat.requestPermissions(LecturePage.this, PERMISSIONS_STORAGE, 1);
                 }
-                final File file = new File(Environment.getExternalStorageDirectory(), transcript.split("/")[2]);
-
+                //String uri = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + transcript.split("/")[2];
+                String uri = Environment.getExternalStorageDirectory() + "/" + transcript.split("/")[2];
+                System.out.println(uri);
+                final File file = new File(uri);
                 if (file.exists()) {
+
                     new Thread(new Runnable(){
 
                         public void run(){
+                            /*
+                            * Date: 2012
+                            * Availability: http://www.coderzheaven.com/2013/03/06/download-pdf-file-open-android-installed-pdf-reader/
+                            */
                             Intent intent = new Intent(Intent.ACTION_VIEW);
-                            intent.setDataAndType(Uri.fromFile(file), "application/pdf");
+                            Uri fileUri = Uri.fromFile(file);
+                            System.out.println(fileUri);
+//                            if (fileUri.substring(0, 7).matches("file://")) {
+//                                fileUri =  fileUri.substring(7);
+//                            }
+                            Uri stuff = FileProvider.getUriForFile(LecturePage.this, BuildConfig.APPLICATION_ID + ".provider", file);
+                            System.out.println(new File(String.valueOf(stuff)).exists());
+                            System.out.println(stuff);
+                            intent.setDataAndType(FileProvider.getUriForFile(LecturePage.this, BuildConfig.APPLICATION_ID + ".provider", file), "application/pdf");
+                            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                         }
@@ -108,8 +120,11 @@ public class LecturePage extends Activity {
         });
     }
 
-    //code borrowed from http://www.devexchanges.info/2015/05/android-tip-combining-multiple.html?m=1
-    //Remember to cite this stuff
+    /*
+     * Author: Hồng Thái
+     * Date: 5/25/2015
+     * Availability: http://www.devexchanges.info/2015/05/android-tip-combining-multiple.html
+     */
     public void setHeight(ListView listView){
         ListAdapter listAdapter = listView.getAdapter();
 

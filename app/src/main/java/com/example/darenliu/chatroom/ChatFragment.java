@@ -34,9 +34,11 @@ import io.socket.emitter.Emitter;
 /**
  * A chat fragment containing messages view and input form.
  * Using library from following github link
- * https://github.com/nkzawa/socket.io-android-chat
+ * Author: Naoyuki Kanezawa
+ * Date: 2016
+ * Availability: https://github.com/nkzawa/socket.io-android-chat/blob/master/app/src/main/java/com/github/nkzawa/socketio/androidchat/MainFragment.java
  */
-public class MainFragment extends Fragment {
+public class ChatFragment extends Fragment {
 
     private RecyclerView mMessagesView;
     private EditText mInputMessageView;
@@ -49,7 +51,7 @@ public class MainFragment extends Fragment {
     private Course course;
     private Lecture lecture;
 
-    public MainFragment() {
+    public ChatFragment() {
         super();
     }
 

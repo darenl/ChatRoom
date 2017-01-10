@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id = "@+id/course_list_heading"
         android:orderInCategory = "100"
         android:showAsAction = "always"
         android:title = "@string/course_list_heading"/>
+
+    <item android:id="@+id/about"
+        android:title="Courses" />
+    <item android:id="@+id/help"
+        android:title="Settings" />
 </menu>

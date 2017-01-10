@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -65,8 +66,11 @@ public class TranscriptPage extends Activity {
         });
     }
 
-    //Code learned from following url
-    //http://stackoverflow.com/questions/31718850/download-mp4-from-server-and-save-it-to-sdcard
+    /*
+     * Author: Tamás Cseh
+     * Date: 2015
+     * Availability: http://stackoverflow.com/questions/31718850/download-mp4-from-server-and-save-it-to-sdcard
+     */
     private class DownloadTranscript extends AsyncTask<Void, Void, Void> {
 
         ProgressDialog progressDialog;
@@ -88,12 +92,7 @@ public class TranscriptPage extends Activity {
                 int permission = ActivityCompat.checkSelfPermission(TranscriptPage.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
                 if (permission != PackageManager.PERMISSION_GRANTED) {
-                    // We don't have permission so prompt the user
-                    ActivityCompat.requestPermissions(
-                            TranscriptPage.this,
-                            PERMISSIONS_STORAGE,
-                            1
-                    );
+                    ActivityCompat.requestPermissions(TranscriptPage.this, PERMISSIONS_STORAGE, 1);
                 }
 
                 URL url = new URL("https://shaban.rit.albany.edu" + transcript);
@@ -102,8 +101,8 @@ public class TranscriptPage extends Activity {
                 connection.connect();
 
                 String fileName = transcript.split("/")[2];
-                File output = new File(Environment.getExternalStorageDirectory(), fileName);
-
+                //File output = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+                File output = new File(Environment.getExternalStorageDirectory(), transcript.split("/")[2]);
                 if (!output.exists())
                     output.createNewFile();
 
@@ -135,9 +134,16 @@ public class TranscriptPage extends Activity {
             new Thread(new Runnable(){
 
                 public void run(){
+
+                    /*
+                     * Date: 2012
+                     * Availability: http://www.coderzheaven.com/2013/03/06/download-pdf-file-open-android-installed-pdf-reader/
+                     */
+                    //File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), transcript.split("/")[2]);
                     File file = new File(Environment.getExternalStorageDirectory(), transcript.split("/")[2]);
                     Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setDataAndType(Uri.fromFile(file), "application/pdf");
+                    intent.setDataAndType(FileProvider.getUriForFile(TranscriptPage.this, getApplicationContext().getPackageName() + ".provider", file), "application/pdf");
+                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                 }

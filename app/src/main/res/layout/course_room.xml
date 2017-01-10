@@ -32,7 +32,7 @@
     <Button
         android:id="@+id/download"
         android:layout_width="fill_parent"
-        android:layout_height="match_parent"
+        android:layout_height="300dp"
         android:text="Download Video"
         android:visibility="gone"/>
 

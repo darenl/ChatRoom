@@ -1,8 +1,9 @@
 package com.example.darenliu.chatroom;
 
 /*
-    Java implementation Sails.io.js Socket.io client for Android.
-    Using Socket.io-client-java library
+ * Author: Naoyuki Kanezawa
+ * Date: 2016
+ * Availability: https://github.com/socketio/socket.io-client-java
 */
 import android.util.Log;
 
@@ -58,7 +59,7 @@ public class SailsIOClient {
     }
 
 
-    SailsIOClient(String url,String... sdkInfo){
+    SailsIOClient(String url, String... sdkInfo){
         try{
             JSONObject oUrl = new JSONObject();
             oUrl.put("url",url);

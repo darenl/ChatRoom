@@ -10,9 +10,9 @@ import android.widget.TextView;
 import java.util.List;
 
 /**
- * A message adapter to handle incoming and outcoming messages for user
- * Using library from following github link
- * https://github.com/nkzawa/socket.io-android-chat
+ * Author: Naoyuki Kanezawa
+ * Date: 2016
+ * Availability: https://github.com/nkzawa/socket.io-android-chat/blob/master/app/src/main/java/com/github/nkzawa/socketio/androidchat/MessageAdapter.java
  */
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
 
