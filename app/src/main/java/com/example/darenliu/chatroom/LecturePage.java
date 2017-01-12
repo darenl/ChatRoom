@@ -2,16 +2,20 @@ package com.example.darenliu.chatroom;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
@@ -79,37 +83,26 @@ public class LecturePage extends Activity {
                 if (permission != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(LecturePage.this, PERMISSIONS_STORAGE, 1);
                 }
-                //String uri = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + transcript.split("/")[2];
-                String uri = Environment.getExternalStorageDirectory() + "/" + transcript.split("/")[2];
-                System.out.println(uri);
-                final File file = new File(uri);
+                String uri = getApplicationContext().getFilesDir().toString();
+                final File file = new File(uri, transcript.split("/")[2]);
                 if (file.exists()) {
-
-                    new Thread(new Runnable(){
-
-                        public void run(){
-                            /*
-                            * Date: 2012
-                            * Availability: http://www.coderzheaven.com/2013/03/06/download-pdf-file-open-android-installed-pdf-reader/
-                            */
-                            Intent intent = new Intent(Intent.ACTION_VIEW);
-                            Uri fileUri = Uri.fromFile(file);
-                            System.out.println(fileUri);
-//                            if (fileUri.substring(0, 7).matches("file://")) {
-//                                fileUri =  fileUri.substring(7);
-//                            }
-                            Uri stuff = FileProvider.getUriForFile(LecturePage.this, BuildConfig.APPLICATION_ID + ".provider", file);
-                            System.out.println(new File(String.valueOf(stuff)).exists());
-                            System.out.println(stuff);
-                            intent.setDataAndType(FileProvider.getUriForFile(LecturePage.this, BuildConfig.APPLICATION_ID + ".provider", file), "application/pdf");
-                            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(intent);
-                        }
-                    }).start();
+                /**
+                    * Author: Naveed Ahmad
+                    * Date: 7/2/16
+                    * Availability: http://stackoverflow.com/questions/38159187/opening-pdf-file-error-this-file-could-not-be-accessed-check-the-location-or-th
+                */
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    Uri fileUri = Uri.fromFile(file);
+                    System.out.println(fileUri);
+                    String filePath = file.getAbsolutePath();
+                    Uri uriFile = Uri.parse("content://com.example.darenliu.chatroom/" + filePath);
+                    intent.setDataAndType(uriFile, "application/pdf");
+                    Intent intentPDF = Intent.createChooser(intent, "Choose Pdf Application");
+                    startActivity(intentPDF);
                 }
                 else {
                     Intent intent = new Intent(LecturePage.this, TranscriptPage.class);
+
                     intent.putExtra("lecture", lecture);
                     intent.putExtra("course", course);
                     intent.putExtra("transcript", transcript);

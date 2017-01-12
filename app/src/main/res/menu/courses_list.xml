@@ -6,9 +6,4 @@
         android:orderInCategory = "100"
         android:showAsAction = "always"
         android:title = "@string/course_list_heading"/>
-
-    <item android:id="@+id/about"
-        android:title="Courses" />
-    <item android:id="@+id/help"
-        android:title="Settings" />
 </menu>

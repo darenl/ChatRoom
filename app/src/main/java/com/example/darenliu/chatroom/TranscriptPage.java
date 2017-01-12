@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -74,6 +76,7 @@ public class TranscriptPage extends Activity {
     private class DownloadTranscript extends AsyncTask<Void, Void, Void> {
 
         ProgressDialog progressDialog;
+        File file;
 
         @Override
         protected void onPreExecute() {
@@ -101,13 +104,13 @@ public class TranscriptPage extends Activity {
                 connection.connect();
 
                 String fileName = transcript.split("/")[2];
-                //File output = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
-                File output = new File(Environment.getExternalStorageDirectory(), transcript.split("/")[2]);
-                if (!output.exists())
-                    output.createNewFile();
+                file = new File(getApplicationContext().getFilesDir().toString(), fileName);
+
+                if (!file.exists())
+                    file.createNewFile();
 
 
-                FileOutputStream outputStream = new FileOutputStream(output);
+                FileOutputStream outputStream = new FileOutputStream(file);
                 InputStream inputStream = connection.getInputStream();
                 byte[] buffer = new byte[1024];
                 int len = 0;
@@ -131,23 +134,17 @@ public class TranscriptPage extends Activity {
             if (progressDialog.isShowing())
                 progressDialog.dismiss();
 
-            new Thread(new Runnable(){
-
-                public void run(){
-
-                    /*
-                     * Date: 2012
-                     * Availability: http://www.coderzheaven.com/2013/03/06/download-pdf-file-open-android-installed-pdf-reader/
-                     */
-                    //File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), transcript.split("/")[2]);
-                    File file = new File(Environment.getExternalStorageDirectory(), transcript.split("/")[2]);
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setDataAndType(FileProvider.getUriForFile(TranscriptPage.this, getApplicationContext().getPackageName() + ".provider", file), "application/pdf");
-                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                }
-            }).start();
+            /**
+             * Author: Naveed Ahmad
+             * Date: 7/2/16
+             * Availability: http://stackoverflow.com/questions/38159187/opening-pdf-file-error-this-file-could-not-be-accessed-check-the-location-or-th
+             */
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            String filePath = file.getAbsolutePath();
+            Uri uriFile = Uri.parse("content://com.example.darenliu.chatroom/" + filePath);
+            intent.setDataAndType(uriFile, "application/pdf");
+            Intent intentPDF = Intent.createChooser(intent, "Choose Pdf Application");
+            startActivity(intentPDF);
 
         }
 

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Chat Room</string>
     <string name="course_list_heading">Courses</string>
+    <string name="lecture_list_heading">Lectures</string>
     <string name="course_room_heading">Course</string>
     <string name="action_leave">Leave</string>
     <string name="action_send">Send</string>

@@ -78,15 +78,11 @@
         </activity>
         <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+
         <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="${applicationId}.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
-        </provider>
+            android:name=".TestContentProvider"
+            android:authorities="com.example.darenliu.chatroom"
+            android:exported="true" />
 
         <meta-data
             android:name="com.google.android.gms.version"

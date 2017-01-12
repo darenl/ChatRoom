@@ -1,3 +1,8 @@
+<!--
+-Author: Max Alley
+-Date: 2013
+-Availability: https://maxalley.wordpress.com/2013/05/18/android-creating-a-tab-layout-with-fragmenttabhost-and-fragments/
+-->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
