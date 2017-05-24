@@ -43,8 +43,6 @@ public class LecturePage extends Activity {
         user = (User) intent.getSerializableExtra("user");
         lecture = (Lecture) intent.getSerializableExtra("lecture");
         course = (Course) intent.getSerializableExtra("course");
-
-
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(LecturePage.this, R.layout.list_item, lecture.getVideoTitles());
         ArrayAdapter<String> adapterTranscript = new ArrayAdapter<String>(LecturePage.this, R.layout.list_item, lecture.getShortenedUrl());
 
@@ -137,6 +135,7 @@ public class LecturePage extends Activity {
         Intent intent = new Intent(this, Chat.class);
         intent.putExtra("course", course);
         intent.putExtra("user", user);
+        intent.putExtra("lecture", lecture);
         startActivity(intent);
     }
 }

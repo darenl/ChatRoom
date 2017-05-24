@@ -25,6 +25,8 @@ public class Message implements Serializable {
         this.content = content;
     }
 
+    public String getUsername(){return username; }
+
     public String getContent() {
         return content;
     }

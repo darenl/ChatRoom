@@ -16,12 +16,14 @@ import java.util.List;
  */
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
 
-    private List<Message> mMessages;
-    private int[] mUsernameColors;
+    private List<Message> messages;
+    private int[] usernameColors;
+    private String username;
 
-    public MessageAdapter(Context context, List<Message> messages) {
-        mMessages = messages;
-        mUsernameColors = context.getResources().getIntArray(R.array.username_colors);
+    public MessageAdapter(Context context, List<Message> messages, String username) {
+        this.username = username;
+        this.messages = messages;
+        usernameColors = context.getResources().getIntArray(R.array.username_colors);
     }
 
     @Override
@@ -31,50 +33,51 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         View v = LayoutInflater
                 .from(parent.getContext())
                 .inflate(layout, parent, false);
-        return new ViewHolder(v);
+        return new ViewHolder(v, username);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
-        Message message = mMessages.get(position);
+        Message message = messages.get(position);
         viewHolder.setMessage(message.getContent());
-        viewHolder.setUsername(message.getUser().getName());
+        viewHolder.setUsername(message.getUsername());
     }
 
     @Override
     public int getItemCount() {
-        return mMessages.size();
+        return messages.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView mUsernameView;
-        private TextView mMessageView;
+        private TextView usernameView;
+        private TextView messageView;
+        private String username;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(View itemView, String username) {
             super(itemView);
-
-            mUsernameView = (TextView) itemView.findViewById(R.id.username);
-            mMessageView = (TextView) itemView.findViewById(R.id.message);
+            this.username = username;
+            usernameView = (TextView) itemView.findViewById(R.id.username);
+            messageView = (TextView) itemView.findViewById(R.id.message);
         }
 
         public void setUsername(String username) {
-            if (null == mUsernameView) return;
-            mUsernameView.setText(username);
-            mUsernameView.setTextColor(getUsernameColor(username));
+            if (null == usernameView) return;
+            usernameView.setText(username);
+            usernameView.setTextColor(getUsernameColor(username));
         }
 
         public void setMessage(String message) {
-            if (null == mMessageView) return;
-            mMessageView.setText(message);
+            if (null == messageView) return;
+            messageView.setText(message);
         }
 
         private int getUsernameColor(String username) {
-            int hash = 7;
-            for (int i = 0, len = username.length(); i < len; i++) {
-                hash = username.codePointAt(i) + (hash << 5) - hash;
-            }
-            int index = Math.abs(hash % mUsernameColors.length);
-            return mUsernameColors[index];
+            int index;
+            if(this.username.equals(username))
+                index = 0;
+            else
+                index = 1;
+            return usernameColors[index];
         }
     }
 }

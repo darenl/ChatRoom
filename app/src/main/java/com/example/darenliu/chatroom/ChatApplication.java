@@ -16,16 +16,16 @@ import java.net.URISyntaxException;
  */
 public class ChatApplication extends Application {
 
-    public Socket mSocket;
+    public Socket socket;
     {
         try {
-            mSocket = IO.socket("https://shaban.rit.albany.edu");
+            socket = IO.socket("https://shaban.rit.albany.edu");
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
 
     public Socket getSocket() {
-        return mSocket;
+        return socket;
     }
 }

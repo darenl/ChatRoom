@@ -52,12 +52,11 @@ import io.socket.emitter.Emitter;
  */
 public class ChatFragment extends Fragment {
 
-    private RecyclerView mMessagesView;
-    private ArrayList<Message> oldMessages = new ArrayList<Message>();
-    private EditText mInputMessageView;
-    private ArrayList<Message> mMessages = new ArrayList<Message>();
-    private RecyclerView.Adapter mAdapter;
-    private boolean mTyping = false;
+    private RecyclerView messagesView;
+    private EditText inputMessageView;
+    private ArrayList<Message> messages = new ArrayList<Message>();
+    private RecyclerView.Adapter messageAdapter;
+    private boolean typing = false;
     private String nameOfUser;
     private SailsIOClient socket;
     private User user;
@@ -72,6 +71,11 @@ public class ChatFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        Intent intent = getActivity().getIntent();
+        user = (User) intent.getSerializableExtra("user");
+        course = (Course) intent.getSerializableExtra("course");
+        lecture = (Lecture) intent.getSerializableExtra("lecture");
+        nameOfUser = user.getName();
         try {
             readMessagesFromFile("course" + course.getCourseId());
         } catch (IOException e) {
@@ -79,19 +83,13 @@ public class ChatFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        mAdapter = new MessageAdapter(activity, mMessages);
+        messageAdapter = new MessageAdapter(activity, messages, user.getName());
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent = getActivity().getIntent();
-        user = (User) intent.getSerializableExtra("user");
-        course = (Course) intent.getSerializableExtra("course");
-        lecture = (Lecture) intent.getSerializableExtra("lecture");
-        nameOfUser = user.getName();
         setHasOptionsMenu(true);
-
         socket = new SailsIOClient("https://shaban.rit.albany.edu", course.getCourseId());
         socket.socket.on("message", onNewMessage);
     }
@@ -107,10 +105,11 @@ public class ChatFragment extends Fragment {
         super.onDestroy();
 
         socket.socket.Disconnect();
-        Intent intent = new Intent(getActivity(), LecturePage.class);
-        intent.putExtra("course", course);
-        intent.putExtra("user", user);
-        startActivity(intent);
+//        Intent intent = new Intent(getActivity(), LecturePage.class);
+//        intent.putExtra("course", course);
+//        intent.putExtra("user", user);
+//        intent.putExtra("lecture", lecture);
+//        startActivity(intent);
         socket.socket.off("message", onNewMessage);
 
     }
@@ -119,12 +118,12 @@ public class ChatFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mMessagesView = (RecyclerView) view.findViewById(R.id.messages);
-        mMessagesView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mMessagesView.setAdapter(mAdapter);
+        messagesView = (RecyclerView) view.findViewById(R.id.messages);
+        messagesView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        messagesView.setAdapter(messageAdapter);
 
-        mInputMessageView = (EditText) view.findViewById(R.id.message_input);
-        mInputMessageView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        inputMessageView = (EditText) view.findViewById(R.id.message_input);
+        inputMessageView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int id, KeyEvent event) {
                 if (id == R.id.send || id == EditorInfo.IME_NULL) {
@@ -138,7 +137,7 @@ public class ChatFragment extends Fragment {
                 return false;
             }
         });
-        mInputMessageView.addTextChangedListener(new TextWatcher() {
+        inputMessageView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -148,8 +147,8 @@ public class ChatFragment extends Fragment {
                 if (null == nameOfUser) return;
                 if (!socket.socket.isConnected()) return;
 
-                if (!mTyping) {
-                    mTyping = true;
+                if (!typing) {
+                    typing = true;
                 }
             }
 
@@ -173,17 +172,17 @@ public class ChatFragment extends Fragment {
 
     private void addMessage(String message) throws JSONException {
         Message newMsg = new Message(user, course, message);
-        mMessages.add(newMsg);
+        messages.add(newMsg);
         writeToFile(user.getName(), newMsg);
-        mAdapter.notifyItemInserted(mMessages.size() - 1);
+        messageAdapter.notifyItemInserted(messages.size() - 1);
         scrollToBottom();
     }
 
     private void addMessage(String username, String message) throws JSONException {
         Message newMsg = new Message(username, course, message);
-        mMessages.add(newMsg);
+        messages.add(newMsg);
         writeToFile(username, newMsg);
-        mAdapter.notifyItemInserted(mMessages.size() - 1);
+        messageAdapter.notifyItemInserted(messages.size() - 1);
         scrollToBottom();
     }
 
@@ -191,15 +190,15 @@ public class ChatFragment extends Fragment {
         if (null == nameOfUser) return;
         if (!socket.socket.isConnected()) return;
 
-        mTyping = false;
+        typing = false;
 
-        String message = mInputMessageView.getText().toString().trim();
+        String message = inputMessageView.getText().toString().trim();
         if (TextUtils.isEmpty(message)) {
-            mInputMessageView.requestFocus();
+            inputMessageView.requestFocus();
             return;
         }
 
-        mInputMessageView.setText("");
+        inputMessageView.setText("");
         addMessage(message);
         JSONObject jsonObject = emitMessage(message);
 
@@ -222,14 +221,15 @@ public class ChatFragment extends Fragment {
 
     private void leave() {
         socket.socket.Disconnect();
-        Intent intent = new Intent(getActivity(), LecturePage.class);
-        intent.putExtra("course", course);
-        intent.putExtra("user", user);
-        startActivity(intent);
+//        Intent intent = new Intent(getActivity(), LecturePage.class);
+//        intent.putExtra("course", course);
+//        intent.putExtra("user", user);
+//        intent.putExtra("lecture", lecture);
+//        startActivity(intent);
     }
 
     private void scrollToBottom() {
-        mMessagesView.scrollToPosition(mAdapter.getItemCount() - 1);
+        messagesView.scrollToPosition(messageAdapter.getItemCount() - 1);
     }
 
     private Emitter.Listener onNewMessage = new Emitter.Listener() {
@@ -263,16 +263,17 @@ public class ChatFragment extends Fragment {
         String uri = getActivity().getFilesDir().toString();
         final File file = new File(uri, url);
 
-        if(file.exists())
+        if(!file.exists()) {
+            file.createNewFile();
             new GetAllMessages().execute();
-
+        }
         else{
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
             JSONObject jsonObject;
-
-            while (bufferedReader.readLine() != null) {
-                jsonObject = new JSONObject(bufferedReader.readLine());
-                mMessages.add(new Message((String) jsonObject.get("user"), course, (String) jsonObject.get("message")));
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                jsonObject = new JSONObject(line);
+                messages.add(new Message((String) jsonObject.get("user"), course, (String) jsonObject.get("message")));
             }
             bufferedReader.close();
         }
@@ -284,10 +285,11 @@ public class ChatFragment extends Fragment {
         json.put("message", message.getContent());
         String jsonToFile = json.toString();
         String uri = getActivity().getFilesDir().toString();
-        final File file = new File(uri, "course" + course.getCourseName());
+        final File file = new File(uri, "course" + course.getCourseId());
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(file);
             OutputStreamWriter myOutWriter = new OutputStreamWriter(fileOutputStream);
+            System.out.println("Hello:  " + jsonToFile);
             if(file.exists())
                 myOutWriter.append(jsonToFile + '\n');
             else
@@ -321,7 +323,7 @@ public class ChatFragment extends Fragment {
         protected Void doInBackground(Void... arg0) {
             // Making a request to url and getting response
             String jsonStr = null;
-            if(oldMessages == null) {
+            if(messages == null) {
                 try {
                     jsonStr = JsonReader.readJsonFromUrl(url + "/messages");
                 } catch (IOException e) {
@@ -331,7 +333,7 @@ public class ChatFragment extends Fragment {
                 }
 
 
-                oldMessages = JsonReader.ParseJSONMessage(jsonStr);
+                messages = JsonReader.ParseJSONMessage(jsonStr);
             }
             return null;
         }
