@@ -93,7 +93,6 @@ public class LecturePage extends Activity {
                 */
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     Uri fileUri = Uri.fromFile(file);
-                    System.out.println(fileUri);
                     String filePath = file.getAbsolutePath();
                     Uri uriFile = Uri.parse("content://com.example.darenliu.chatroom/" + filePath);
                     intent.setDataAndType(uriFile, "application/pdf");

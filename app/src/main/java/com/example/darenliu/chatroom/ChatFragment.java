@@ -1,7 +1,9 @@
 package com.example.darenliu.chatroom;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,13 +19,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,8 +53,9 @@ import io.socket.emitter.Emitter;
 public class ChatFragment extends Fragment {
 
     private RecyclerView mMessagesView;
+    private ArrayList<Message> oldMessages = new ArrayList<Message>();
     private EditText mInputMessageView;
-    private List<Message> mMessages = new ArrayList<Message>();
+    private ArrayList<Message> mMessages = new ArrayList<Message>();
     private RecyclerView.Adapter mAdapter;
     private boolean mTyping = false;
     private String nameOfUser;
@@ -50,6 +63,7 @@ public class ChatFragment extends Fragment {
     private User user;
     private Course course;
     private Lecture lecture;
+    private static String url = "https://shaban.rit.albany.edu/lecture";
 
     public ChatFragment() {
         super();
@@ -58,6 +72,13 @@ public class ChatFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        try {
+            readMessagesFromFile("course" + course.getCourseId());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         mAdapter = new MessageAdapter(activity, mMessages);
     }
 
@@ -86,6 +107,10 @@ public class ChatFragment extends Fragment {
         super.onDestroy();
 
         socket.socket.Disconnect();
+        Intent intent = new Intent(getActivity(), LecturePage.class);
+        intent.putExtra("course", course);
+        intent.putExtra("user", user);
+        startActivity(intent);
         socket.socket.off("message", onNewMessage);
 
     }
@@ -146,16 +171,18 @@ public class ChatFragment extends Fragment {
         });
     }
 
-    private void addMessage(String message) {
+    private void addMessage(String message) throws JSONException {
         Message newMsg = new Message(user, course, message);
         mMessages.add(newMsg);
+        writeToFile(user.getName(), newMsg);
         mAdapter.notifyItemInserted(mMessages.size() - 1);
         scrollToBottom();
     }
 
-    private void addMessage(String username, String message){
+    private void addMessage(String username, String message) throws JSONException {
         Message newMsg = new Message(username, course, message);
         mMessages.add(newMsg);
+        writeToFile(username, newMsg);
         mAdapter.notifyItemInserted(mMessages.size() - 1);
         scrollToBottom();
     }
@@ -222,10 +249,101 @@ public class ChatFragment extends Fragment {
                         return;
                     }
                     if(!username.equals(user.getName()))
-                        addMessage(username, message);
+                        try {
+                            addMessage(username, message);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                 }
             });
         }
     };
+
+    private void readMessagesFromFile(String url) throws IOException, JSONException {
+        String uri = getActivity().getFilesDir().toString();
+        final File file = new File(uri, url);
+
+        if(file.exists())
+            new GetAllMessages().execute();
+
+        else{
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            JSONObject jsonObject;
+
+            while (bufferedReader.readLine() != null) {
+                jsonObject = new JSONObject(bufferedReader.readLine());
+                mMessages.add(new Message((String) jsonObject.get("user"), course, (String) jsonObject.get("message")));
+            }
+            bufferedReader.close();
+        }
+    }
+
+    private void writeToFile(String username, Message message) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("user", username);
+        json.put("message", message.getContent());
+        String jsonToFile = json.toString();
+        String uri = getActivity().getFilesDir().toString();
+        final File file = new File(uri, "course" + course.getCourseName());
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            OutputStreamWriter myOutWriter = new OutputStreamWriter(fileOutputStream);
+            if(file.exists())
+                myOutWriter.append(jsonToFile + '\n');
+            else
+                myOutWriter.write(jsonToFile + '\n');
+            myOutWriter.close();
+
+            fileOutputStream.flush();
+            fileOutputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private class GetAllMessages extends AsyncTask<Void, Void, Void> {
+
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Showing progress loading dialog
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setMessage("Loading all messages...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            // Making a request to url and getting response
+            String jsonStr = null;
+            if(oldMessages == null) {
+                try {
+                    jsonStr = JsonReader.readJsonFromUrl(url + "/messages");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+                oldMessages = JsonReader.ParseJSONMessage(jsonStr);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            // Dismiss the progress dialog
+            if (progressDialog.isShowing())
+                progressDialog.dismiss();
+        }
+
+    }
 }
 

@@ -13,6 +13,11 @@ public class Lecture implements Serializable{
 
     private ArrayList<String> transcript_url = new ArrayList<String>();
 
+    public Lecture(String lectureDescription, String lectureId){
+        this.lectureDescription = lectureDescription;
+        this.lectureId = lectureId;
+    }
+
     public Lecture(String lectureDescription, String lectureId, String serialNumber, String transcript_url){
         this.lectureDescription = lectureDescription;
         this.lectureId = lectureId;

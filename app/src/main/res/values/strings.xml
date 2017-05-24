@@ -1,5 +1,10 @@
+<!--
+    * Author: Naoyuki Kanezawa
+    * Date: 2016
+    * Availability: https://github.com/nkzawa/socket.io-android-chat/tree/master/app/src/main/res/values/strings.xml
+-->
 <resources>
-    <string name="app_name">Chat Room</string>
+    <string name="app_name">Shaban</string>
     <string name="course_list_heading">Courses</string>
     <string name="lecture_list_heading">Lectures</string>
     <string name="course_room_heading">Course</string>

@@ -16,6 +16,10 @@ public class Course implements Serializable {
 
     }
 
+    public Course(String courseId){
+        this.courseId = courseId;
+    }
+
     public Course(String courseName, String courseId){
         this.courseName = courseName;
         this.courseId = courseId;
