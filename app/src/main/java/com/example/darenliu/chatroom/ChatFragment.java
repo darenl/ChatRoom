@@ -259,7 +259,6 @@ public class ChatFragment extends Fragment {
     private void readMessagesFromFile(String url) throws IOException, JSONException, ExecutionException, InterruptedException {
         String uri = getActivity().getFilesDir().toString();
         final File file = new File(uri, url);
-        file.delete();
         if(!file.exists()) {
             file.createNewFile();
             new GetAllMessages().execute().get();
