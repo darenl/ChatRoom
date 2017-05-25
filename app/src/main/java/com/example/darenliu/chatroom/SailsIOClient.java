@@ -160,7 +160,7 @@ public class SailsIOClient {
                     post("/groups/join/" + groupId, new Ack() {
                         @Override
                         public void call(Object... args) {
-                            System.out.println("Acknowledge connection");
+                            System.out.println("Acknowledge connection to groups");
                         }
                     });
                     Log.d("Socket","Connection Established.");

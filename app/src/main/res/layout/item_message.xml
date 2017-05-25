@@ -3,7 +3,7 @@
     * Date: 2016
     * Availability: https://github.com/nkzawa/socket.io-android-chat/tree/master/app/src/main/res/layout/item_message.xml
 -->
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -12,7 +12,7 @@
 
     <TextView
         android:id="@+id/username"
-        style="?android:textAppearanceMedium"
+        style="?android:textAppearanceSmall"
         android:textColor="?android:textColorPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,7 +24,9 @@
         android:textColor="?android:textColorPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/username"
         android:paddingLeft="@dimen/spacing"
-        android:paddingRight="@dimen/spacing" />
+        android:paddingRight="@dimen/spacing"
+        android:background="@drawable/text_box"/>
 
-</LinearLayout>
+</RelativeLayout>

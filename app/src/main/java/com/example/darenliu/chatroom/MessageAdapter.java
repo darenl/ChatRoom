@@ -1,10 +1,14 @@
 package com.example.darenliu.chatroom;
 
 import android.content.Context;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -36,11 +40,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         return new ViewHolder(v, username);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         Message message = messages.get(position);
-        viewHolder.setMessage(message.getContent());
-        viewHolder.setUsername(message.getUsername());
+        viewHolder.setUsernameAndMessage(message.getUsername(), message.getContent());
     }
 
     @Override
@@ -60,14 +64,30 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             messageView = (TextView) itemView.findViewById(R.id.message);
         }
 
-        public void setUsername(String username) {
+        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+        public void setUsernameAndMessage(String username, String message) {
             if (null == usernameView) return;
+            if (null == messageView) return;
+
+            RelativeLayout.LayoutParams usernameLayout = (RelativeLayout.LayoutParams) usernameView.getLayoutParams();
+            RelativeLayout.LayoutParams messageLayout = (RelativeLayout.LayoutParams) messageView.getLayoutParams();
+
+            if(this.username.equals(username)) {
+                usernameLayout.removeRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                messageLayout.removeRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                usernameLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                messageLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            }
+            else{
+                usernameLayout.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                messageLayout.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                usernameLayout.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                messageLayout.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+            }
+
             usernameView.setText(username);
             usernameView.setTextColor(getUsernameColor(username));
-        }
 
-        public void setMessage(String message) {
-            if (null == messageView) return;
             messageView.setText(message);
         }
 

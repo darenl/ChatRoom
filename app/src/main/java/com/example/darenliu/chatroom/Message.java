@@ -8,21 +8,22 @@ import java.io.Serializable;
 public class Message implements Serializable {
 
     private String username;
-    private User user;
     private Course course;
     private String content;
-    private String id;
+    private int id;
 
-    public Message(User user, Course course, String content){
-        this.user = user;
-        this.course = course;
-        this.content = content;
-    }
 
     public Message(String username, Course course, String content){
         this.username = username;
         this.course = course;
         this.content = content;
+    }
+
+    public Message(String username, Course course, String content, int id){
+        this.username = username;
+        this.course = course;
+        this.content = content;
+        this.id = id;
     }
 
     public String getUsername(){return username; }
@@ -35,19 +36,11 @@ public class Message implements Serializable {
         this.content = content;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
