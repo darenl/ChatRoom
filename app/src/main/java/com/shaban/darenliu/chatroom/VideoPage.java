@@ -1,4 +1,4 @@
-package com.example.darenliu.chatroom;
+package com.shaban.darenliu.chatroom;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -6,10 +6,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.Display;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -51,7 +49,6 @@ public class VideoPage extends Activity {
         vidTitle.setText(video.getTitle());
 
         File file = new File(Environment.getExternalStorageDirectory(), video.getShortenedUrl());
-
         if (file.exists()) {
             /*
              * Title: Tutorial how to Play Video in Android Studio 1.4

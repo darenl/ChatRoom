@@ -1,4 +1,4 @@
-package com.example.darenliu.chatroom;
+package com.shaban.darenliu.chatroom;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;

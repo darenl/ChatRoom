@@ -1,4 +1,4 @@
-package com.example.darenliu.chatroom;
+package com.shaban.darenliu.chatroom;
 
 import android.app.Activity;
 import android.app.ProgressDialog;

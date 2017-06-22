@@ -1,7 +1,6 @@
-package com.example.darenliu.chatroom;
+package com.shaban.darenliu.chatroom;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 /**
  * Created by Daren Liu on 11/11/2016.

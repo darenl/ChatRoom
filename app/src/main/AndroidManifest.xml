@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.darenliu.chatroom">
+    package="com.shaban.darenliu.chatroom">
     <!-- Internet permission -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -11,14 +11,14 @@
 
     <application
         android:allowBackup="true"
-        android:name="com.example.darenliu.chatroom.ChatApplication"
+        android:name="com.shaban.darenliu.chatroom.ChatApplication"
         android:icon="@mipmap/shaban_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:largeHeap="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="com.shaban.darenliu.chatroom.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,53 +28,53 @@
         </activity>
 
         <activity
-            android:name="com.example.darenliu.chatroom.LectureView"
+            android:name="com.shaban.darenliu.chatroom.LectureView"
             android:label="@string/course_room_heading">
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.shaban.darenliu.chatroom.MainActivity" />
         </activity>
 
         <activity
-            android:name="com.example.darenliu.chatroom.LecturePage"
+            android:name="com.shaban.darenliu.chatroom.LecturePage"
             android:label="@string/course_room_heading">
             android:parentActivityName=".LectureView" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.shaban.darenliu.chatroom.MainActivity" />
         </activity>
 
-        <activity android:name="com.example.darenliu.chatroom.VideoPage"
+        <activity android:name="com.shaban.darenliu.chatroom.VideoPage"
             android:label="Video">
             android:parentActivityName=".LecturePage" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.shaban.darenliu.chatroom.MainActivity" />
         </activity>
 
-        <activity android:name="com.example.darenliu.chatroom.TranscriptPage"
+        <activity android:name="com.shaban.darenliu.chatroom.TranscriptPage"
             android:label="Transcript">
             android:parentActivityName=".LecturePage" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.shaban.darenliu.chatroom.MainActivity" />
         </activity>
 
         <activity
-            android:name="com.example.darenliu.chatroom.Chat"
+            android:name="com.shaban.darenliu.chatroom.Chat"
             android:label="Chat">
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.shaban.darenliu.chatroom.MainActivity" />
         </activity>
         <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
 
         <provider
-            android:name=".TestContentProvider"
-            android:authorities="com.example.darenliu.chatroom"
+            android:name="com.shaban.darenliu.chatroom.TestContentProvider"
+            android:authorities="com.shaban.darenliu.chatroom"
             android:exported="true" />
 
         <meta-data
