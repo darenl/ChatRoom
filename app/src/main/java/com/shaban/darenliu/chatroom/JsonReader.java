@@ -123,32 +123,20 @@ public class JsonReader {
         }
     }
 
-    public static User ParseJSONUser(String json, Activity activity) {
-        TelephonyManager tMgr = (TelephonyManager) activity.getSystemService(Context.TELEPHONY_SERVICE);
-
-        String phoneNumber = tMgr.getLine1Number();
+    public static User ParseJSONUser(String json) {
         if (json != null) {
             try {
-
-                ArrayList<User> userList = new ArrayList<User>();
-                JSONArray jsonArray = new JSONArray(json);
-                // looping through All Students
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject userObject = jsonArray.getJSONObject(i);
-                    String userNumber = userObject.getString(TAG_USER_NUMBER);
-                    if(userNumber.compareTo(phoneNumber) == 0) {
-                        String firstName = userObject.getString(TAG_USER_FIRST_NAME);
-                        String lastName = userObject.getString(TAG_USER_LAST_NAME);
-                        return new User(firstName, lastName, userNumber);
-                    }
-                }
-                Log.e("ServiceHandler", "Not a registered user");
-                return null;
+                JSONObject userObject = new JSONObject(json);
+                String userNumber = userObject.getString(TAG_USER_NUMBER);
+                String firstName = userObject.getString(TAG_USER_FIRST_NAME);
+                String lastName = userObject.getString(TAG_USER_LAST_NAME);
+                return new User(firstName, lastName, userNumber);
             } catch (JSONException e) {
                 e.printStackTrace();
                 return null;
             }
-        } else {
+        }
+        else {
             Log.e("ServiceHandler", "No data received from HTTP request");
             return null;
         }

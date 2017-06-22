@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -75,6 +76,11 @@ public class TranscriptPage extends Activity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            final int REQUEST_CODE_ASK_PERMISSIONS = 123;
+            if(ContextCompat.checkSelfPermission(getBaseContext(), "android.permission.WRITE_EXTERNAL_STORAGE") != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(TranscriptPage.this, new String[]{"android.permission.WRITE_EXTERNAL_STORAGE"}, REQUEST_CODE_ASK_PERMISSIONS);
+            }
+
             // Showing progress loading dialog
             progressDialog = new ProgressDialog(TranscriptPage.this);
             progressDialog.setMessage("Downloading PDF...");
@@ -135,7 +141,7 @@ public class TranscriptPage extends Activity {
              */
             Intent intent = new Intent(Intent.ACTION_VIEW);
             String filePath = file.getAbsolutePath();
-            Uri uriFile = Uri.parse("content://com.example.darenliu.chatroom/" + filePath);
+            Uri uriFile = Uri.parse("content://com.shaban.darenliu.chatroom/" + filePath);
             intent.setDataAndType(uriFile, "application/pdf");
             Intent intentPDF = Intent.createChooser(intent, "Choose Pdf Application");
             startActivity(intentPDF);

@@ -1,9 +1,11 @@
 package com.shaban.darenliu.chatroom;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,15 +79,18 @@ public class SettingsFragment extends Fragment {
         protected Void doInBackground(Void... arg0) {
             // Making a request to url and getting response
             String jsonStr = null;
+            TelephonyManager tMgr = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+
+            String phoneNumber = tMgr.getLine1Number();
             try {
-                jsonStr = JsonReader.readJsonFromUrl("https://shaban.rit.albany.edu/users");
+                jsonStr = JsonReader.readJsonFromUrl("https://shaban.rit.albany.edu/users/" + phoneNumber);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
-            user = JsonReader.ParseJSONUser(jsonStr, getActivity());
+            user = JsonReader.ParseJSONUser(jsonStr);
 
             return null;
         }

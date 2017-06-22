@@ -3,9 +3,12 @@ package com.shaban.darenliu.chatroom;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.MediaController;
@@ -101,6 +104,11 @@ public class VideoPage extends Activity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            final int REQUEST_CODE_ASK_PERMISSIONS = 123;
+            if(ContextCompat.checkSelfPermission(getBaseContext(), "android.permission.WRITE_EXTERNAL_STORAGE") != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(VideoPage.this, new String[]{"android.permission.WRITE_EXTERNAL_STORAGE"}, REQUEST_CODE_ASK_PERMISSIONS);
+            }
+
             // Showing progress loading dialog
             progressDialog = new ProgressDialog(VideoPage.this);
             progressDialog.setMessage("Downloading Video...");

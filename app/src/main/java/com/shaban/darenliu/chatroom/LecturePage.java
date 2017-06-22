@@ -66,8 +66,7 @@ public class LecturePage extends Activity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Object item = adapterView.getItemAtPosition(i);
-
-                int indexOfTranscript = lecture.getTranscriptUrl().indexOf("/transcripts/" + (String) item);
+                int indexOfTranscript = lecture.getTranscriptUrl().indexOf("/files/" + (String) item);
                 String transcript = lecture.getTranscriptUrl().get(indexOfTranscript);
                 int permission = ActivityCompat.checkSelfPermission(LecturePage.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 

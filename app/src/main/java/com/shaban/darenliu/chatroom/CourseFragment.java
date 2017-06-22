@@ -1,6 +1,7 @@
 package com.shaban.darenliu.chatroom;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ListFragment;
 import android.support.v4.content.ContextCompat;
+import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,14 +43,6 @@ public class CourseFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final int REQUEST_CODE_ASK_PERMISSIONS = 123;
-        if(ContextCompat.checkSelfPermission(getActivity().getBaseContext(), "android.permission.READ_SMS") != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{"android.permission.READ_SMS"}, REQUEST_CODE_ASK_PERMISSIONS);
-        }
-
-        if(ContextCompat.checkSelfPermission(getActivity().getBaseContext(), "android.permission.READ_PHONE_STATE") != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{"android.permission.READ_PHONE_STATE"}, REQUEST_CODE_ASK_PERMISSIONS);
-        }
     }
 
     @Override
@@ -153,6 +147,14 @@ public class CourseFragment extends ListFragment {
         protected void onPreExecute() {
             super.onPreExecute();
             // Showing progress loading dialog
+            final int REQUEST_CODE_ASK_PERMISSIONS = 123;
+            if(ContextCompat.checkSelfPermission(getActivity().getBaseContext(), "android.permission.READ_SMS") != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{"android.permission.READ_SMS"}, REQUEST_CODE_ASK_PERMISSIONS);
+            }
+
+            if(ContextCompat.checkSelfPermission(getActivity().getBaseContext(), "android.permission.READ_PHONE_STATE") != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{"android.permission.READ_PHONE_STATE"}, REQUEST_CODE_ASK_PERMISSIONS);
+            }
             progressDialog = new ProgressDialog(getActivity());
             progressDialog.setMessage("Loading all courses...");
             progressDialog.setCancelable(false);
@@ -163,15 +165,18 @@ public class CourseFragment extends ListFragment {
         protected Void doInBackground(Void... arg0) {
             // Making a request to url and getting response
             String jsonStr = null;
+            TelephonyManager tMgr = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+
+            String phoneNumber = tMgr.getLine1Number();
             try {
-                jsonStr = JsonReader.readJsonFromUrl("https://shaban.rit.albany.edu/users");
+                jsonStr = JsonReader.readJsonFromUrl("https://shaban.rit.albany.edu/users/" + phoneNumber);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
-            user = JsonReader.ParseJSONUser(jsonStr, getActivity());
+            user = JsonReader.ParseJSONUser(jsonStr);
 
             return null;
         }
@@ -187,7 +192,7 @@ public class CourseFragment extends ListFragment {
                 new GetCourse().execute();
             else {
                 Toast toast = new Toast(getContext());
-                toast.makeText(getContext(), "Not a registered user", Toast.LENGTH_SHORT).show();
+                toast.makeText(getContext(), "Error: Not a registered user", Toast.LENGTH_SHORT).show();
             }
         }
 
