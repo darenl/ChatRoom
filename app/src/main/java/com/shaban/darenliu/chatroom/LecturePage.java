@@ -38,7 +38,10 @@ public class LecturePage extends Activity {
         course = (Course) intent.getSerializableExtra("course");
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(LecturePage.this, R.layout.list_item, lecture.getVideoTitles());
         ArrayAdapter<String> adapterTranscript = new ArrayAdapter<String>(LecturePage.this, R.layout.list_item, lecture.getShortenedUrl());
-
+        int permission = ActivityCompat.checkSelfPermission(LecturePage.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(LecturePage.this, PERMISSIONS_STORAGE, 1);
+        }
         ListView listview = (ListView) findViewById(R.id.list1);
         ListView listviewTranscript = (ListView) findViewById(R.id.list2);
         listview.setAdapter(adapter);
@@ -68,11 +71,7 @@ public class LecturePage extends Activity {
                 Object item = adapterView.getItemAtPosition(i);
                 int indexOfTranscript = lecture.getTranscriptUrl().indexOf("/files/" + (String) item);
                 String transcript = lecture.getTranscriptUrl().get(indexOfTranscript);
-                int permission = ActivityCompat.checkSelfPermission(LecturePage.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-                if (permission != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(LecturePage.this, PERMISSIONS_STORAGE, 1);
-                }
                 String uri = getApplicationContext().getFilesDir().toString();
                 final File file = new File(uri, transcript.split("/")[2]);
                 if (file.exists()) {

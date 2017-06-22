@@ -148,9 +148,6 @@ public class CourseFragment extends ListFragment {
             super.onPreExecute();
             // Showing progress loading dialog
             final int REQUEST_CODE_ASK_PERMISSIONS = 123;
-            if(ContextCompat.checkSelfPermission(getActivity().getBaseContext(), "android.permission.READ_SMS") != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(getActivity(), new String[]{"android.permission.READ_SMS"}, REQUEST_CODE_ASK_PERMISSIONS);
-            }
 
             if(ContextCompat.checkSelfPermission(getActivity().getBaseContext(), "android.permission.READ_PHONE_STATE") != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(getActivity(), new String[]{"android.permission.READ_PHONE_STATE"}, REQUEST_CODE_ASK_PERMISSIONS);

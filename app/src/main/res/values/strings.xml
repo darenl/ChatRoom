@@ -8,11 +8,16 @@
     <string name="course_list_heading">Courses</string>
     <string name="lecture_list_heading">Lectures</string>
     <string name="course_room_heading">Course</string>
-    <string name="action_leave">Leave</string>
-    <string name="action_send">Send</string>
-    <string name="prompt_message">Message</string>
+    <string name='user_information'>User Information</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="intro">Shaban is an online platform that provides users with the ability to learn about various topics in health and human rights via downloadable video and pdf courses, and connect with each other via chat to discuss each lesson.  In order to fully access everything Shaban has to offer, there is some personal data from your mobile device that we require.  As such, we have provided this privacy policy to inform you of what sort of data the app will be accessing.</string>
+    <string name="requirement">What We Require</string>
+    <string name="phone">Phone: This permission allows the app to read/modify the phone state and make phone calls</string>
+    <string name="storage">Photos/Medias/Files: This permission allows the app to read and write files to internal and external storage</string>
+    <string name="why">Why We Need This</string>
+    <string name="why_phone">Phone: Each user in Shaban has their own account that is accessed via phone number.  The user’s phone number is their login information and their id.  Thus, it is required for the app to access this information on the mobile device</string>
+    <string name="why_storage">Photos/Medias/Files: Shaban allows users to download and play video and pdf files that are provided in each lecture.  In order to download and play these files, it is required for the app to be able to access the mobile device’s storage where the files will be placed/located.</string>
 
-    <string name="connect">Connected</string>
-    <string name="disconnect">Disconnected, Please check your internet connection</string>
-    <string name="error_connect">Failed to connect</string>
+    <string name="prompt">Type</string>
+    <string name="send">Send</string>
 </resources>
