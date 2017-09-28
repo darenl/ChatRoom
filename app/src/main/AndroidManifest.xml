@@ -17,13 +17,20 @@
         android:largeHeap="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.shaban.darenliu.chatroom.MainActivity"
-            android:label="@string/app_name">
+            android:name=".LoginActivity"
+            android:label="Shaban">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.shaban.darenliu.chatroom.MainActivity">
+            android:parentActivityName=".LoginActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.shaban.darenliu.chatroom.LoginActivity" />
         </activity>
 
         <activity

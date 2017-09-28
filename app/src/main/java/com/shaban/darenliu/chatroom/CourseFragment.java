@@ -48,10 +48,9 @@ public class CourseFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if(user == null)
-            new ConfirmUser().execute();
-        else
-            new GetCourse().execute();
+        Bundle arg = getArguments();
+        user = (User) arg.getSerializable("user");
+        new GetCourse().execute();
         return inflater.inflate(R.layout.fragment_course, container, false);
     }
 
@@ -135,62 +134,6 @@ public class CourseFragment extends ListFragment {
                     CourseFragment.this.getActivity().startActivity(intent);
                 }
             });
-        }
-
-    }
-
-    private class ConfirmUser extends AsyncTask<Void, Void, Void> {
-
-        ProgressDialog progressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // Showing progress loading dialog
-            final int REQUEST_CODE_ASK_PERMISSIONS = 123;
-
-            if(ContextCompat.checkSelfPermission(getActivity().getBaseContext(), "android.permission.READ_PHONE_STATE") != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(getActivity(), new String[]{"android.permission.READ_PHONE_STATE"}, REQUEST_CODE_ASK_PERMISSIONS);
-            }
-            progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setMessage("Loading all courses...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            // Making a request to url and getting response
-            String jsonStr = null;
-            TelephonyManager tMgr = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
-
-            String phoneNumber = tMgr.getLine1Number();
-            try {
-                jsonStr = JsonReader.readJsonFromUrl("https://shaban.rit.albany.edu/users/" + phoneNumber);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            user = JsonReader.ParseJSONUser(jsonStr);
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            // Dismiss the progress dialog
-            if (progressDialog.isShowing())
-                progressDialog.dismiss();
-
-            if(user != null)
-                new GetCourse().execute();
-            else {
-                Toast toast = new Toast(getContext());
-                toast.makeText(getContext(), "Error: Not a registered user", Toast.LENGTH_SHORT).show();
-            }
         }
 
     }
