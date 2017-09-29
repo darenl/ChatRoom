@@ -69,6 +69,7 @@ public class ChatFragment extends Fragment {
         user = (User) intent.getSerializableExtra("user");
         course = (Course) intent.getSerializableExtra("course");
         lecture = (Lecture) intent.getSerializableExtra("lecture");
+        //System.out.println(user.getName());
         nameOfUser = user.getName();
         try {
             readMessagesFromFile("course" + course.getCourseId());
@@ -88,7 +89,7 @@ public class ChatFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        //setHasOptionsMenu(true);
         socket = new SailsIOClient("https://shaban.rit.albany.edu", course.getCourseId());
         socket.socket.on("message", onNewMessage);
     }
@@ -186,7 +187,6 @@ public class ChatFragment extends Fragment {
         inputMessageView.setText("");
         addMessage(user.getName(), message);
         JSONObject jsonObject = emitMessage(message);
-
         // perform the sending message attempt.
         socket.socket.post("/messages", jsonObject, new Ack() {
             @Override
@@ -204,10 +204,10 @@ public class ChatFragment extends Fragment {
         author.put("firstName", user.getFirstName());
         author.put("lastName", user.getLastName());
         author.put("phone", user.getPhone());
-
+        group.put("serial_number", lecture.getSerialNumber());
         group.put("description", lecture.getLectureDescription());
         group.put("transcript_url", lecture.getTranscriptUrl());
-        group.put("id", course.getCourseId());
+        group.put("id", lecture.getLectureId());
         group.put("course", course.getCourseId());
         data.put("author", author);
         data.put("group", group);
@@ -335,6 +335,7 @@ public class ChatFragment extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
             messages = JsonReader.ParseJSONMessage(jsonStr, course);
             for(int x = 0; x < messages.size() - 1; x++){
                 int min = x;

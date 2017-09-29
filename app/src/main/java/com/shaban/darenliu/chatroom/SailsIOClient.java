@@ -318,6 +318,7 @@ public class SailsIOClient {
             Log.d("post"," request");
             JSONObject gObj = new JSONObject();
             try {
+                System.out.println(data.get("group"));
                 gObj.put("method", "post");
                 gObj.put("data", data);
                 gObj.put("url", url);

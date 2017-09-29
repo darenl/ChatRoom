@@ -153,6 +153,8 @@ public class JsonReader {
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject message = jsonArray.getJSONObject(i);
                     JSONObject author = message.getJSONObject("author");
+                    if(!message.has("group"))
+                        continue;
                     JSONObject group = message.getJSONObject("group");
                     String name = author.getString(TAG_USER_FIRST_NAME) + " " + author.getString(TAG_USER_LAST_NAME);
                     String courseId = group.getString("course");
