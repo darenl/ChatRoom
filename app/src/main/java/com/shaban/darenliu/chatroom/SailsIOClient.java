@@ -157,10 +157,10 @@ public class SailsIOClient {
                 @Override
                 public void call(Object... args){
                     //JSONObject obj = (JSONObject) args[0];
-                    post("/groups/join/" + groupId, new Ack() {
+                    post("/messages?group=" + groupId, new Ack() {
                         @Override
                         public void call(Object... args) {
-                            System.out.println("Acknowledge connection to groups");
+                            Log.d("Acknowledge connection", " to groups");
                         }
                     });
                     Log.d("Socket","Connection Established.");

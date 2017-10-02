@@ -69,10 +69,10 @@ public class ChatFragment extends Fragment {
         user = (User) intent.getSerializableExtra("user");
         course = (Course) intent.getSerializableExtra("course");
         lecture = (Lecture) intent.getSerializableExtra("lecture");
-        //System.out.println(user.getName());
         nameOfUser = user.getName();
         try {
-            readMessagesFromFile("course" + course.getCourseId());
+            new GetAllMessages().execute().get();
+            readMessagesFromFile("lecture" + lecture.getLectureId());
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -90,7 +90,7 @@ public class ChatFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setHasOptionsMenu(true);
-        socket = new SailsIOClient("https://shaban.rit.albany.edu", course.getCourseId());
+        socket = new SailsIOClient("https://shaban.rit.albany.edu", lecture.getLectureId());
         socket.socket.on("message", onNewMessage);
     }
 
@@ -167,7 +167,7 @@ public class ChatFragment extends Fragment {
     }
 
     private void addMessage(String username, String message) throws JSONException {
-        Message newMsg = new Message(username, course, message);
+        Message newMsg = new Message(username, message);
         messages.add(newMsg);
         writeToFile(username, newMsg);
         messageAdapter.notifyItemInserted(messages.size() - 1);
@@ -234,6 +234,7 @@ public class ChatFragment extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    System.out.println("Are you being reached");
                     JSONObject data = (JSONObject) args[0];
                     JSONObject author;
                     String username;
@@ -261,20 +262,18 @@ public class ChatFragment extends Fragment {
         final File file = new File(uri, url);
         if(!file.exists()) {
             file.createNewFile();
-            new GetAllMessages().execute().get();
         }
-        else{
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-            JSONObject jsonObject;
-            String line;
-            Message message;
-            while ((line = bufferedReader.readLine()) != null) {
-                jsonObject = new JSONObject(line);
-                message = new Message((String) jsonObject.get("user"), course, (String) jsonObject.get("message"));
-                messages.add(message);
-            }
-            bufferedReader.close();
+
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+        JSONObject jsonObject;
+        String line;
+        Message message;
+        while ((line = bufferedReader.readLine()) != null) {
+            jsonObject = new JSONObject(line);
+            message = new Message((String) jsonObject.get("user"), (String) jsonObject.get("message"));
+            messages.add(message);
         }
+        bufferedReader.close();
     }
 
     private void writeToFile(String username, Message message) throws JSONException {
@@ -283,20 +282,23 @@ public class ChatFragment extends Fragment {
         json.put("message", message.getContent());
         String jsonToFile = json.toString();
         String uri = getActivity().getFilesDir().toString();
-        final File file = new File(uri, "course" + course.getCourseId());
+        final File file = new File(uri, "lecture" + lecture.getLectureId());
         try {
             FileOutputStream fileOutputStream;
             OutputStreamWriter outputStreamWriter;
-            if(file.exists()) {
-                fileOutputStream = getContext().openFileOutput(file.getName(), Context.MODE_APPEND);
-                outputStreamWriter = new OutputStreamWriter(fileOutputStream);
-                outputStreamWriter.append(jsonToFile + '\n');
-            }
-            else {
-                fileOutputStream = getContext().openFileOutput(file.getName(), Context.MODE_PRIVATE);
-                outputStreamWriter = new OutputStreamWriter(fileOutputStream);
-                outputStreamWriter.write(jsonToFile + '\n');
-            }
+            fileOutputStream = getContext().openFileOutput(file.getName(), Context.MODE_PRIVATE);
+            outputStreamWriter = new OutputStreamWriter(fileOutputStream);
+            outputStreamWriter.write(jsonToFile + '\n');
+//            if(file.exists()) {
+//                fileOutputStream = getContext().openFileOutput(file.getName(), Context.MODE_APPEND);
+//                outputStreamWriter = new OutputStreamWriter(fileOutputStream);
+//                outputStreamWriter.append(jsonToFile + '\n');
+//            }
+//            else {
+//                fileOutputStream = getContext().openFileOutput(file.getName(), Context.MODE_PRIVATE);
+//                outputStreamWriter = new OutputStreamWriter(fileOutputStream);
+//                outputStreamWriter.write(jsonToFile + '\n');
+//            }
             outputStreamWriter.close();
 
             fileOutputStream.flush();
@@ -311,7 +313,7 @@ public class ChatFragment extends Fragment {
     private class GetAllMessages extends AsyncTask<Void, Void, Void> {
 
         ProgressDialog progressDialog;
-        private String url = "https://shaban.rit.albany.edu/messages";
+        private String url = "https://shaban.rit.albany.edu/messages?limit=1000&group=" + lecture.getLectureId() + "&sort=id%20DESC";
 
         @Override
         protected void onPreExecute() {
@@ -336,7 +338,7 @@ public class ChatFragment extends Fragment {
                 e.printStackTrace();
             }
 
-            messages = JsonReader.ParseJSONMessage(jsonStr, course);
+            messages = JsonReader.ParseJSONMessage(jsonStr, lecture);
             for(int x = 0; x < messages.size() - 1; x++){
                 int min = x;
                 for(int y = x+1; y < messages.size(); y++){
@@ -349,8 +351,8 @@ public class ChatFragment extends Fragment {
                 messages.set(x, messages.get(min));
                 messages.set(min, temp);
             }
-
-            for (Message msg: messages) {
+            for (int x = messages.size() - 1; x <= 0; x--) {
+                Message msg = messages.get(x);
                 try {
                     writeToFile(msg.getUsername(), msg);
                 } catch (JSONException e) {

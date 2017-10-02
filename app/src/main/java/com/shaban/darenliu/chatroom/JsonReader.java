@@ -142,7 +142,7 @@ public class JsonReader {
         }
     }
 
-    public static ArrayList<Message> ParseJSONMessage(String json, Course course) {
+    public static ArrayList<Message> ParseJSONMessage(String json, Lecture lecture) {
         if (json != null) {
             try {
 
@@ -153,15 +153,17 @@ public class JsonReader {
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject message = jsonArray.getJSONObject(i);
                     JSONObject author = message.getJSONObject("author");
-                    if(!message.has("group"))
+                    if(!message.has("group")) {
                         continue;
+                    }
+
                     JSONObject group = message.getJSONObject("group");
                     String name = author.getString(TAG_USER_FIRST_NAME) + " " + author.getString(TAG_USER_LAST_NAME);
-                    String courseId = group.getString("course");
                     String content = message.getString("content");
-                    int id = Integer.parseInt(message.getString("id"));
-                    if(courseId.equals(course.getCourseId()))
-                        messageList.add(new Message(name, new Course(courseId), content, id));
+                    int msgId = Integer.parseInt(message.getString("id"));
+                    int id = Integer.parseInt(group.getString("id"));
+                    if(id == Integer.parseInt(lecture.getLectureId()))
+                        messageList.add(new Message(name, content, msgId));
 
                 }
                 return messageList;
